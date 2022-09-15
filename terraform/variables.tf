@@ -1,5 +1,5 @@
 variable "project_id" {
-    default = "proyectosoa-362116"
+    default = "sentimentproject-362601"
 }
 
 variable "region" {
