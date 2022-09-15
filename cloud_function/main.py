@@ -1,7 +1,8 @@
+from google.cloud import vision
+import firebase_admin
+from firebase_admin import firestore
+
 def main(event, context):
-    from google.cloud import vision
-    import firebase_admin
-    from firebase_admin import firestore
 
     file_name= event["name"]
     bucket_name= event["bucket"]
@@ -14,6 +15,7 @@ def main(event, context):
     image = vision.Image(source=vision.ImageSource(image_uri=blob_uri))
     response = client.face_detection(image=image)
     faceAnnotation = response.face_annotations
+    print("Entro Aqui" + str(faceAnnotation))
 
     #Get the first face
     analist = faceAnnotation[0]
@@ -30,7 +32,7 @@ def main(event, context):
         answer = "surprised"
 
     employee = file_name.split(".")[0]
-    print(employee + "is" + answer)
+    print(employee + " is " + answer)
 
     app_options = {'projectId': 'proyectosoa-362116'}
     app = firebase_admin.initialize_app(options=app_options)
