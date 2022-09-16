@@ -58,4 +58,5 @@ def main(event, context):
 
     # Delete the default app
     firebase_admin.delete_app(app)
+    return employee + " esta " + str(resp)
 
