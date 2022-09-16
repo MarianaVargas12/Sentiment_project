@@ -38,13 +38,12 @@ def main(event, context):
     else:
         for a in answer:
             if a == "no se sabe":
-                a
+                return a
             else:
                 resp += a + ", "
-    print(employee + " esta " + resp)
-
 
     employee = file_name.split(".")[0]
+    print(employee + " esta " + str(resp))
 
     app_options = {"projectId": "sentimentproject-362601"}
     app = firebase_admin.initialize_app(options=app_options)
