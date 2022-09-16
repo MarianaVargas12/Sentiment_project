@@ -1,0 +1,85 @@
+pipeline {
+    agent any
+    options {disableConcurrentBuilds()}
+    environment {
+        GOOGLE_PROJECT_ID = "sentimentproject-362601" 
+        GOOGLE_PROJECT_NAME = "SentimentProject"
+        GOOGLE_APPLICATION_CREDENTIALS = credentials('sc_jenkins_terraform')
+        GOOGLE_CLOUD_KEYFILE_JSON = credentials('sc_jenkins_terraform')
+    }
+    parameters { 
+      choice(name: 'ENTORNOS', choices: ['dev', 'pre', 'pro'], description: 'Seleccione el entorno a utilizar')
+      choice(name: 'ACCION', choices: ['', 'plan-apply', 'destroy'], description: 'Seleccione el entorno a utilizar')
+    }
+    stages{
+        
+        stage('clean workspaces -----------') { 
+            steps {
+              cleanWs()
+              sh 'env'
+            } //steps
+        }  //stage
+
+        //${params.Acción}
+        stage("git clone code terraform"){
+            steps {
+                cleanWs()
+                    checkout([$class: 'GitSCM', 
+                    branches: [[name: '*/pipeline']], 
+                    doGenerateSubmoduleConfigurations: false, 
+                    extensions: [[$class: 'CleanCheckout']], 
+                    submoduleCfg: [], 
+                    userRemoteConfigs: [
+                        [url: 'https://github.com/MarianaVargas12/Sentiment_project']
+                        ]])
+                sh 'pwd' 
+                sh 'ls -l'
+            } //steps
+        }  //stage
+
+        stage('Unit test----') {
+         steps {
+            sh ' cd Sentiment_project/cloud_function/ && python3 prueba.py'
+            } //steps
+        }  //stage
+    
+        stage('Terraform init----') {
+         steps {
+            sh 'terraform --version'
+            sh ' cd Sentiment_project/terraform/ && terraform init'
+            } //steps
+        }  //stage
+
+        stage('Terraform plan----') {
+            steps {
+               sh 'cd Sentiment_project/terraform/ && terraform plan'
+            } //steps
+        }  //stage
+        
+        stage('Confirmación de accion') {
+            steps {
+                script {
+                    def userInput = input(id: 'confirm', message: params.ACCION + '?', parameters: [ [$class: 'BooleanParameterDefinition', defaultValue: false, description: 'Apply terraform', name: 'confirm'] ])
+                }
+            }
+        }
+        
+        stage('Terraform apply or destroy ----------------') {
+            steps {
+               sh 'echo "comienza"'
+            script{  
+                if (params.ACCION == "destroy"){
+                         sh ' echo "llego" + params.ACCION'   
+                         sh 'cd Sentiment_project/terraform/ && terraform destroy'
+                } else {
+                         sh ' echo  "llego" + params.ACCION'                 
+                         sh 'cd Sentiment_project/terraform/ && terraform apply'  
+                }  // if
+
+            }
+            } //steps
+        }  //stage
+   }  // stages
+} //pipeline
+
+//Tomado de https://github.com/agustinjaume/jenkins-server/blob/master/README-punto-16-gcp-terraform.md
