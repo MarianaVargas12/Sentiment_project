@@ -12,10 +12,15 @@ resource "google_storage_bucket_object" "zip" {
     name         = "src-${data.archive_file.source.output_md5}.zip"
     bucket       = google_storage_bucket.function_bucket.name
 
+    # Dependencies are automatically inferred so these lines can be deleted
+    depends_on   = [
+        google_storage_bucket.function_bucket,  # declared in `storage.tf`
+        data.archive_file.source
+    ]
 }
 # Create the Cloud function triggered by a `Finalize` event on the bucket
 resource "google_cloudfunctions_function" "function" {
-    name                  = "sentiment_function"
+    name                  = "scanFace"
     runtime               = "python37"  # of course changeable
 
     # Get the source code of the cloud function as a Zip compression
@@ -31,4 +36,9 @@ resource "google_cloudfunctions_function" "function" {
         resource   = "${var.project_id}-input"
     }
 
+    # Dependencies are automatically inferred so these lines can be deleted
+    depends_on            = [
+        google_storage_bucket.function_bucket,  # declared in `storage.tf`
+        google_storage_bucket_object.zip
+    ]
 }

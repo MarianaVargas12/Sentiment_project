@@ -1,7 +1,8 @@
+from google.cloud import vision
+import firebase_admin
+from firebase_admin import firestore
+
 def main(event, context):
-    from google.cloud import vision
-    import firebase_admin
-    from firebase_admin import firestore
 
     file_name= event["name"]
     bucket_name= event["bucket"]
@@ -17,29 +18,42 @@ def main(event, context):
 
     #Get the first face
     analist = faceAnnotation[0]
+    answer = ["no se sabe"]
 
-    if (analist.detection_confidence >= 3) and (analist.detection_confidence <= 5):
-        answer = "confident"
-    elif (analist.anger_likelihood >= 3) and (analist.anger_likelihood <= 5):
-        answer = "angry"
-    elif (analist.joy_likelihood >= 3) and (analist.joy_likelihood <= 5):
-        answer = "happy"
-    elif (analist.sorrow_likelihood >= 3) and (analist.sorrow_likelihood <= 5):
-        answer = "sad"
-    elif (analist.surprise_likelihood >= 3) and (analist.surprise_likelihood <= 5):
-        answer = "surprised"
+    if (analist.detection_confidence >= 4) and (analist.detection_confidence <= 5):
+        answer += ["confiado"]
+    if (analist.anger_likelihood >= 4) and (analist.anger_likelihood <= 5):
+        answer += ["enojado"]
+    if (analist.joy_likelihood >= 4) and (analist.joy_likelihood <= 5):
+        answer += ["feliz"]
+    if (analist.sorrow_likelihood >= 4) and (analist.sorrow_likelihood <= 5):
+        answer += ["triste"]
+    if (analist.surprise_likelihood >= 4) and (analist.surprise_likelihood <= 5):
+        answer += ["sorprendido"]
 
     employee = file_name.split(".")[0]
-    print(employee + "is" + answer)
+    resp = ''
+    if (len(answer) == 1):
+        resp = answer[0]
+    else:
+        for a in answer:
+            if a == "no se sabe":
+                a
+            else:
+                resp += a + ", "
+    print(employee + " esta " + resp)
 
-    app_options = {'projectId': 'proyectosoa-362116'}
+
+    employee = file_name.split(".")[0]
+
+    app_options = {"projectId": "sentimentproject-362601"}
     app = firebase_admin.initialize_app(options=app_options)
     db = firestore.client()
     doc = db.collection("employee").document(employee)
 
     doc.set({
         "name": employee,
-        "emotion": answer
+        "emotions": resp
     })
     
     # Delete the default app 
