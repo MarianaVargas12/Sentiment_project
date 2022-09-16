@@ -18,18 +18,31 @@ def main(event, context):
 
     #Get the first face
     analist = faceAnnotation[0]
-    answer = "no se sabe"
+    answer = ["no se sabe"]
 
     if (analist.detection_confidence >= 4) and (analist.detection_confidence <= 5):
-        answer = "Confiado"
-    elif (analist.anger_likelihood >= 4) and (analist.anger_likelihood <= 5):
-        answer = "Enojado"
-    elif (analist.joy_likelihood >= 4) and (analist.joy_likelihood <= 5):
-        answer = "Feliz"
-    elif (analist.sorrow_likelihood >= 4) and (analist.sorrow_likelihood <= 5):
-        answer = "Triste"
-    elif (analist.surprise_likelihood >= 4) and (analist.surprise_likelihood <= 5):
-        answer = "Sorprendido"
+        answer += ["confiado"]
+    if (analist.anger_likelihood >= 4) and (analist.anger_likelihood <= 5):
+        answer += ["enojado"]
+    if (analist.joy_likelihood >= 4) and (analist.joy_likelihood <= 5):
+        answer += ["feliz"]
+    if (analist.sorrow_likelihood >= 4) and (analist.sorrow_likelihood <= 5):
+        answer += ["triste"]
+    if (analist.surprise_likelihood >= 4) and (analist.surprise_likelihood <= 5):
+        answer += ["sorprendido"]
+
+    employee = file_name.split(".")[0]
+    resp = ''
+    if (len(answer) == 1):
+        resp = answer[0]
+    else:
+        for a in answer:
+            if a == "no se sabe":
+                a
+            else:
+                resp += a + ", "
+    print(employee + " esta " + resp)
+
 
     employee = file_name.split(".")[0]
 
@@ -40,9 +53,8 @@ def main(event, context):
 
     doc.set({
         "name": employee,
-        "emotion": answer
+        "emotions": resp
     })
-    print(employee + " esta " + answer)
     
     # Delete the default app 
     firebase_admin.delete_app(app)
