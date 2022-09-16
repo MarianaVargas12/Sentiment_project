@@ -34,7 +34,7 @@ def main(event, context):
     employee = file_name.split(".")[0]
     print(employee + " is " + answer)
 
-    app_options = {'projectId': 'proyectosoa-362116'}
+    app_options = {"projectId": "sentimentproject-362601"}
     app = firebase_admin.initialize_app(options=app_options)
     db = firestore.client()
     doc = db.collection("employee").document(employee)
