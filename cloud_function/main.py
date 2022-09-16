@@ -2,21 +2,22 @@ from google.cloud import vision
 import firebase_admin
 from firebase_admin import firestore
 
+
 def main(event, context):
+    file_name = event["name"]
+    bucket_name = event["bucket"]
 
-    file_name= event["name"]
-    bucket_name= event["bucket"]
+    client = vision.ImageAnnotatorClient()
 
-    client = vision.ImageAnnotatorClient() 
-
-    #URI of the image
+    # URI of the image
     blob_uri = f"gs://{bucket_name}/{file_name}"
-    #blob source
+    # blob source
     image = vision.Image(source=vision.ImageSource(image_uri=blob_uri))
     response = client.face_detection(image=image)
     faceAnnotation = response.face_annotations
+    print("Entro Aqui" + str(faceAnnotation))
 
-    #Get the first face
+    # Get the first face
     analist = faceAnnotation[0]
     answer = ["no se sabe"]
 
@@ -38,7 +39,7 @@ def main(event, context):
     else:
         for a in answer:
             if a == "no se sabe":
-                return a
+                a
             else:
                 resp += a + ", "
 
@@ -54,7 +55,7 @@ def main(event, context):
         "name": employee,
         "emotions": resp
     })
-    
-    # Delete the default app 
+
+    # Delete the default app
     firebase_admin.delete_app(app)
 
