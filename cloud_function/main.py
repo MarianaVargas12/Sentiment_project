@@ -38,10 +38,10 @@ def main(event, context):
     else:
         for a in answer:
             if a == "no se sabe":
-                a
+                return a
             else:
                 resp += a + ", "
-    print(employee + " esta " + resp)
+    print(employee + " esta " + str(resp))
 
 
     employee = file_name.split(".")[0]
