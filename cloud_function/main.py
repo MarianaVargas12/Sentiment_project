@@ -41,10 +41,9 @@ def main(event, context):
                 return a
             else:
                 resp += a + ", "
-    print(employee + " esta " + str(resp))
-
 
     employee = file_name.split(".")[0]
+    print(employee + " esta " + str(resp))
 
     app_options = {"projectId": "sentimentproject-362601"}
     app = firebase_admin.initialize_app(options=app_options)
