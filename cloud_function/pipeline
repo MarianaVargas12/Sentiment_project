@@ -4,6 +4,7 @@ pipeline {
     environment {
         GOOGLE_PROJECT_ID = "sentimentproject-362601" 
         GOOGLE_PROJECT_NAME = "SentimentProject"
+        GOOGLE_APPLICATION_CREDENTIALS = credentials('service_account')
         PATH = "C:\\Windows\\System32"
     }
     parameters { 
@@ -19,7 +20,6 @@ pipeline {
             } //steps
         }  //stage
 
-        //${params.Acción}
         stage("git clone----"){
             steps {
                 cleanWs()
@@ -27,7 +27,6 @@ pipeline {
                     branches: [[name: '*/pipeline']], 
                     extensions: [[$class: 'CleanCheckout']], 
                     userRemoteConfigs: [[credentialsId: 'b22a0158-1387-4e82-a6aa-6a153ddafc09', url: 'https://github.com/MarianaVargas12/Sentiment_project.git']]])
-                //bat 'pwd' 
                 bat 'dir'
             } //steps
         }  //stage
@@ -47,21 +46,21 @@ pipeline {
     
         stage('Terraform init----') {
          steps {
-            bat 'terraform --version'
-            bat ' cd terraform/ && terraform init'
+            bat 'C:\\ProgramData\\chocolatey\\bin\\terraform.exe --version'
+            bat ' cd terraform/ && C:\\ProgramData\\chocolatey\\bin\\terraform.exe  init'
             } //steps
         }  //stage
 
         stage('Terraform plan----') {
             steps {
-               bat 'cd terraform/ && terraform plan'
+               bat 'cd terraform/ && C:\\ProgramData\\chocolatey\\bin\\terraform.exe  plan'
             } //steps
         }  //stage
         
         stage('Confirmación de accion') {
             steps {
                 script {
-                    def userInput = input(id: 'confirm', message: params.ACCION + '?', parameters: [ [$class: 'BooleanParameterDefinition', defaultValue: false, description: 'Apply terraform', name: 'confirm'] ])
+                    def userInput = input(id: 'yes', message: params.ACCION + '?', parameters: [ [$class: 'BooleanParameterDefinition', defaultValue: false, description: 'Apply terraform', name: 'yes'] ])
                 }
             }
         }
@@ -72,21 +71,16 @@ pipeline {
             script{  
                 if (params.ACCION == "destroy"){
                          bat ' echo "llego" + params.ACCION'   
-                         bat 'cd Sentiment_project/terraform/ && terraform destroy'
+                         bat 'cd terraform/ && C:\\ProgramData\\chocolatey\\bin\\terraform.exe destroy -auto-approve'
                 } else {
-                         bat ' echo  "llego" + params.ACCION'                 
-                         bat 'cd Sentiment_project/terraform/ && terraform apply'  
+                         bat 'echo  "llego" + params.ACCION'                 
+                         bat 'cd terraform/ && C:\\ProgramData\\chocolatey\\bin\\terraform.exe apply -auto-approve'
                 }  // if
 
             }
             } //steps
         }  //stage
         
-        stage('Unit test----') {
-         steps {
-            bat ' cd cloud_function/ && C:\\Users\\maria\\AppData\\Local\\Programs\\Python\\Python310\\python.exe prueba.py'
-            } //steps
-        }  //stage
    }  // stages
 } //pipeline
 
