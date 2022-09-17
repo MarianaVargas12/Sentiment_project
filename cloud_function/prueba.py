@@ -1,9 +1,9 @@
 from main import main
 import unittest
 
-class TestEmotions(unittest.TestCase):
+class prueba(unittest.TestCase):
 
-    def test_analyze_emotion_correct(self):
+    def prueba_correct(self):
         self.assertEqual(
             main(
                 {"name": "edgar.jpg", "bucket": "sentimentproject-362601-input"}, 0),
