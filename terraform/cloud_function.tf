@@ -42,27 +42,3 @@ resource "google_cloudfunctions_function" "function" {
         google_storage_bucket_object.zip
     ]
 }
-# Create the Cloud function triggered by a `Finalize` event on the bucket
-resource "google_cloudfunctions_function" "test" {
-    name                  = "unitTest"
-    runtime               = "python37"  # of course changeable
-
-    # Get the source code of the cloud function as a Zip compression
-    source_archive_bucket = google_storage_bucket.function_bucket.name
-    source_archive_object = google_storage_bucket_object.zip.name
-
-    # Must match the function name in the cloud function `main.py` source code
-    entry_point           = "prueba"
-    
-    # 
-    event_trigger {
-        event_type = "google.storage.object.finalize"
-        resource   = "${var.project_id}-input"
-    }
-
-    # Dependencies are automatically inferred so these lines can be deleted
-    depends_on            = [
-        google_storage_bucket.function_bucket,  # declared in `storage.tf`
-        google_storage_bucket_object.zip
-    ]
-}
