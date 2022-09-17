@@ -4,6 +4,7 @@ pipeline {
     environment {
         GOOGLE_PROJECT_ID = "sentimentproject-362601" 
         GOOGLE_PROJECT_NAME = "SentimentProject"
+        PATH = "C:\\Windows\\System32"
     }
     parameters { 
       choice(name: 'ENTORNOS', choices: ['dev', 'pre', 'pro'], description: 'Seleccione el entorno a utilizar')
@@ -14,7 +15,7 @@ pipeline {
         stage('clean workspaces -----------') { 
             steps {
               cleanWs()
-              sh 'env'
+              //bat 'env'
             } //steps
         }  //stage
 
@@ -24,45 +25,36 @@ pipeline {
                 cleanWs()
                     checkout([$class: 'GitSCM', 
                     branches: [[name: '*/pipeline']], 
-                    doGenerateSubmoduleConfigurations: false, 
                     extensions: [[$class: 'CleanCheckout']], 
-                    submoduleCfg: [], 
-                    userRemoteConfigs: [
-                        [url: 'https://github.com/MarianaVargas12/Sentiment_project.git']
-                        ]])
-                sh 'pwd' 
-                sh 'ls -l'
+                    userRemoteConfigs: [[credentialsId: 'b22a0158-1387-4e82-a6aa-6a153ddafc09', url: 'https://github.com/MarianaVargas12/Sentiment_project.git']]])
+                //bat 'pwd' 
+                bat 'dir'
             } //steps
         }  //stage
 
         stage('Install----') {
          steps {
-            sh ' cd Sentiment_project/cloud_function/ && pip install -r requirements.txt'
+            bat ' cd cloud_function/ && C:\\Users\\maria\\AppData\\Local\\Programs\\Python\\Python310\\Scripts\\pip.exe install -r requirements.txt'
             } //steps
         }  //stage
 
         stage('Lint----') {
          steps {
-            sh ' cd Sentiment_project/cloud_function/ && pylint main.py'
+            bat ' cd cloud_function/ && C:\\Users\\maria\\AppData\\Local\\Programs\\Python\\Python310\\Scripts\\pylint.exe main.py --exit-zero'
             } //steps
         }  //stage
 
-        stage('Unit test----') {
-         steps {
-            sh ' cd Sentiment_project/cloud_function/ && py prueba.py'
-            } //steps
-        }  //stage
     
         stage('Terraform init----') {
          steps {
-            sh 'terraform --version'
-            sh ' cd Sentiment_project/terraform/ && terraform init'
+            bat 'terraform --version'
+            bat ' cd terraform/ && terraform init'
             } //steps
         }  //stage
 
         stage('Terraform plan----') {
             steps {
-               sh 'cd Sentiment_project/terraform/ && terraform plan'
+               bat 'cd terraform/ && terraform plan'
             } //steps
         }  //stage
         
@@ -76,17 +68,23 @@ pipeline {
         
         stage('Terraform apply or destroy ----------------') {
             steps {
-               sh 'echo "comienza"'
+               bat 'echo "comienza"'
             script{  
                 if (params.ACCION == "destroy"){
-                         sh ' echo "llego" + params.ACCION'   
-                         sh 'cd Sentiment_project/terraform/ && terraform destroy'
+                         bat ' echo "llego" + params.ACCION'   
+                         bat 'cd Sentiment_project/terraform/ && terraform destroy'
                 } else {
-                         sh ' echo  "llego" + params.ACCION'                 
-                         sh 'cd Sentiment_project/terraform/ && terraform apply'  
+                         bat ' echo  "llego" + params.ACCION'                 
+                         bat 'cd Sentiment_project/terraform/ && terraform apply'  
                 }  // if
 
             }
+            } //steps
+        }  //stage
+        
+        stage('Unit test----') {
+         steps {
+            bat ' cd cloud_function/ && C:\\Users\\maria\\AppData\\Local\\Programs\\Python\\Python310\\python.exe prueba.py'
             } //steps
         }  //stage
    }  // stages
