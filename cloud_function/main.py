@@ -26,7 +26,7 @@ def main(event, context):
     if (analist.anger_likelihood >= 4) and (analist.anger_likelihood <= 5):
         answer += ["enojado"]
     if (analist.joy_likelihood >= 4) and (analist.joy_likelihood <= 5):
-        answer += ["feliz"]
+        answer += ["muy feliz"]
     if (analist.sorrow_likelihood >= 4) and (analist.sorrow_likelihood <= 5):
         answer += ["triste"]
     if (analist.surprise_likelihood >= 4) and (analist.surprise_likelihood <= 5):
@@ -52,6 +52,7 @@ def main(event, context):
         "name": employee,
         "emotions": resp
     })
+    
     # Elimina el default app
     firebase_admin.delete_app(app)
     return employee + " esta " + str(resp)
