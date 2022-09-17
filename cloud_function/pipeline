@@ -4,8 +4,6 @@ pipeline {
     environment {
         GOOGLE_PROJECT_ID = "sentimentproject-362601" 
         GOOGLE_PROJECT_NAME = "SentimentProject"
-        GOOGLE_APPLICATION_CREDENTIALS = credentials('sc_jenkins_terraform')
-        GOOGLE_CLOUD_KEYFILE_JSON = credentials('sc_jenkins_terraform')
     }
     parameters { 
       choice(name: 'ENTORNOS', choices: ['dev', 'pre', 'pro'], description: 'Seleccione el entorno a utilizar')
@@ -21,7 +19,7 @@ pipeline {
         }  //stage
 
         //${params.Acción}
-        stage("git clone code terraform"){
+        stage("git clone----"){
             steps {
                 cleanWs()
                     checkout([$class: 'GitSCM', 
@@ -37,9 +35,21 @@ pipeline {
             } //steps
         }  //stage
 
+        stage('Install----') {
+         steps {
+            sh ' cd Sentiment_project/cloud_function/ && pip install -r requirements.txt'
+            } //steps
+        }  //stage
+        
+        stage('Lint----') {
+         steps {
+            sh ' cd Sentiment_project/cloud_function/ && pylint main.py'
+            } //steps
+        }  //stage
+
         stage('Unit test----') {
          steps {
-            sh ' cd Sentiment_project/cloud_function/ && python3 prueba.py'
+            sh ' cd Sentiment_project/cloud_function/ && py prueba.py'
             } //steps
         }  //stage
     
