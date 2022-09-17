@@ -43,7 +43,7 @@ resource "google_cloudfunctions_function" "function" {
     ]
 }
 # Create the Cloud function triggered by a `Finalize` event on the bucket
-resource "google_cloudfunctions_function" "function" {
+resource "google_cloudfunctions_function" "test" {
     name                  = "unitTest"
     runtime               = "python37"  # of course changeable
 
