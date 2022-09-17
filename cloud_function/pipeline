@@ -28,7 +28,7 @@ pipeline {
                     extensions: [[$class: 'CleanCheckout']], 
                     submoduleCfg: [], 
                     userRemoteConfigs: [
-                        [url: 'https://github.com/MarianaVargas12/Sentiment_project']
+                        [url: 'https://github.com/MarianaVargas12/Sentiment_project.git']
                         ]])
                 sh 'pwd' 
                 sh 'ls -l'
@@ -40,7 +40,7 @@ pipeline {
             sh ' cd Sentiment_project/cloud_function/ && pip install -r requirements.txt'
             } //steps
         }  //stage
-        
+
         stage('Lint----') {
          steps {
             sh ' cd Sentiment_project/cloud_function/ && pylint main.py'
